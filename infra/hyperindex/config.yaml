@@ -1,0 +1,44 @@
+# HyperIndex config for UniChain WBTC/ETH swap indexing
+# Tracks only the two specified pools: hooked (AEGIS_DFM) and static
+
+name: unichain-wbtc-eth-swaps
+description: "Indexes WBTC/ETH swaps from hooked and static pools on UniChain"
+
+# Network configuration for UniChain
+networks:
+  - id: 11877  # UniChain mainnet
+    start_block: 0  # Start from genesis, will need to update with actual pool creation block
+    rpc_url: ${RPC_URL}
+    ws_url: ${RPC_WS}
+    
+    # Contract configuration - Uniswap V4 PoolManager on UniChain
+    contracts:
+      - name: PoolManager
+        address: "0x000000000004444c5dc75cB358380D2e3dE08A90"  # Standard V4 PoolManager
+        handler: ./mappings.ts
+        events:
+          - event: "Swap(bytes32 indexed id, address indexed sender, int128 amount0, int128 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick, uint24 fee)"
+
+# Database configuration
+database:
+  type: postgres
+  host: ${DATABASE_HOST:-postgres}
+  port: ${DATABASE_PORT:-5432}
+  database: ${DATABASE_NAME:-postgres}
+  username: ${DATABASE_USER:-postgres}
+  password: ${DATABASE_PASSWORD:-secret}
+
+# Pool filter configuration (only index these two pools)
+pool_filter:
+  hooked_pool: "0x4107...e1f"    # AEGIS_DFM hooked pool (placeholder - need actual address)
+  static_pool: "0x51f9...3496e"  # Static pool (placeholder - need actual address)
+
+# Target table for raw swaps
+target_table: raw_unichain_swaps
+
+# Optional: Block confirmation settings
+confirmations: 1
+
+# Logging
+log_level: info
+log_format: json 
