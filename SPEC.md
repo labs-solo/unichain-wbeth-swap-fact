@@ -24,16 +24,16 @@
 
 ```mermaid
 flowchart TD
-    A[💧 WebSocket RPC<br/>Alchemy] -->|Swap Logs| B[📦 HyperIndex<br/>raw_unichain_swaps]
-    A -->|eth_getTransactionReceipt| C[🧾 tx_gas]
-    A -->|WBTC/USDC<br/>ETH/USDC Swaps| D[💹 token_prices_usd_day]
-    E[🏷️ address_labels<br/>(Dune + CSV)] --> F[✨ Enrichment SQL]
+    A["💧 WebSocket RPC<br>Alchemy"] -->|"Swap Logs"| B["📦 HyperIndex<br>raw_unichain_swaps"]
+    A -->|"eth_getTransactionReceipt"| C["🧾 tx_gas"]
+    A -->|"WBTC/USDC<br>ETH/USDC Swaps"| D["💹 token_prices_usd_day"]
+    E["🏷️ address_labels<br>Dune + CSV"] --> F["✨ Enrichment SQL"]
     B --> F
     C --> F
     D --> F
-    F --> G[📊 pool_swap_fact_unichain]
-    G --> H[📄 CSV Export<br/>swap_fact_YYYYMMDD.csv]
-    H --> I[☁️ Dune Upload]
+    F --> G["📊 pool_swap_fact_unichain"]
+    G --> H["📄 CSV Export<br>swap_fact_YYYYMMDD.csv"]
+    H --> I["☁️ Dune Upload"]
 ```
 
 ---
