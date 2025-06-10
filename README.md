@@ -12,6 +12,8 @@ This pipeline indexes swap events from two UniChain WBTC/ETH pools:
 
 Daily at 02:00 UTC, it produces enriched CSV files for Dune upload.
 
+> For a complete breakdown of the architecture, schema, and ETL steps, please see the [**Full Specification (SPEC.md)**](./SPEC.md).
+
 ## 🏗️ Architecture
 
 ```
