@@ -6,6 +6,30 @@ set -e  # Exit on any error
 
 echo "🚀 Initializing database schema for UniChain WBTC/ETH swap fact pipeline..."
 
+# Warn if any environment variable still uses placeholder values
+warn_placeholders() {
+    local flagged=0
+    if [ "${HOOKED_POOL}" = "0x4107...e1f" ]; then
+        echo "⚠️  HOOKED_POOL uses placeholder address" >&2
+        flagged=1
+    fi
+    if [ "${STATIC_POOL}" = "0x51f9...3496e" ]; then
+        echo "⚠️  STATIC_POOL uses placeholder address" >&2
+        flagged=1
+    fi
+    if [[ "${RPC_URL}" == *"YOUR_ALCHEMY_KEY_HERE"* ]]; then
+        echo "⚠️  RPC_URL contains placeholder API key" >&2
+        flagged=1
+    fi
+    if [[ "${RPC_WS}" == *"YOUR_ALCHEMY_KEY_HERE"* ]]; then
+        echo "⚠️  RPC_WS contains placeholder API key" >&2
+        flagged=1
+    fi
+    [ $flagged -eq 1 ] && echo "🚨 Please update your .env file with real values." >&2
+}
+
+warn_placeholders
+
 # Database connection parameters
 DB_HOST=${PGHOST:-postgres}
 DB_PORT=${PGPORT:-5432}
