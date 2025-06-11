@@ -20,7 +20,7 @@ RUN pnpm install
 COPY . .
 
 # Generate code and build
-RUN pnpm build
+RUN envio codegen && pnpm build
 
 # Production stage
 FROM node:18-alpine AS runner
@@ -44,9 +44,9 @@ RUN addgroup -g 1001 -S hyperindex && \
 RUN chown -R hyperindex:hyperindex /app
 USER hyperindex
 
-# Health check
+# Health check for envio start (GraphQL endpoint or health endpoint)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:8080/health || exit 1
+  CMD curl -f http://localhost:8080/health || curl -f http://localhost:8080/graphql || exit 1
 
 # Environment variables
 ENV NODE_ENV=production
@@ -54,5 +54,5 @@ ENV CHAIN_ID=11877
 ENV LOG_LEVEL=info
 ENV TZ=UTC
 
-# Run the envio indexer
-CMD ["envio", "dev"] 
+# Run the envio indexer in production mode
+CMD ["envio", "start"] 

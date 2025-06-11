@@ -10,7 +10,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-secret}"
     ports: ["5432:5432"]
-    volumes: ["pgdata:/var/lib/postgresql/data"]
+    volumes: 
+      - "pgdata:/var/lib/postgresql/data"
+      - ".:/workdir"
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
@@ -35,9 +37,10 @@ services:
       - hyperindex_cache:/root/.envio
     working_dir: /workdir/infra/hyperindex
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || curl -f http://localhost:8080/graphql"]
       interval: 30s
       retries: 5
+      start_period: 60s
 
 # ──────────────────────────────────────────────────────────────
 # 3. cron (daily refresh)  – runs inside a custom Alpine image
