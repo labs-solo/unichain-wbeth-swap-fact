@@ -3,7 +3,33 @@
  * Handles Swap events from Uniswap V4 PoolManager
  */
 
-import { SwapEvent, Database } from '@hyperindex/core';
+// Minimal interface stubs for HyperIndex types to allow local compilation
+// without pulling in the real '@hyperindex/core' package.
+export interface SwapEvent {
+  chainId: number;
+  blockNumber: number;
+  logIndex: number;
+  transactionHash: string;
+  block: { timestamp: number };
+  transaction: { from: string };
+  params: {
+    id: any;
+    sender: string;
+    amount0: { toString(): string };
+    amount1: { toString(): string };
+    sqrtPriceX96: { toString(): string };
+    liquidity: { toString(): string };
+    tick: number;
+    fee: number;
+  };
+}
+
+export interface Database {
+  insert(table: string, row: any): Promise<void>;
+}
+
+// Node type definitions are not bundled, so declare a minimal `process` object
+declare const process: { env: Record<string, string | undefined> };
 
 // Pool addresses from environment/config
 const HOOKED_POOL = process.env.HOOKED_POOL || "0x4107...e1f";
