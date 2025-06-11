@@ -34,6 +34,9 @@ UniChain RPC → HyperIndex → Postgres → ETL Scripts → CSV → Dune
    cp .env.template .env
    # Edit .env with your Alchemy RPC URLs and actual pool addresses
    ```
+   **Important**: set `HOOKED_POOL`, `STATIC_POOL`, `RPC_URL` and `RPC_WS` to real
+   values before starting the stack. The placeholders in `.env.template` will
+   cause the pipeline to fail.
 
 2. **Start Services**
    ```bash
@@ -87,6 +90,9 @@ Every day at 02:00 UTC, the system:
 - Docker & Docker Compose
 - Alchemy API key for UniChain RPC access
 - Actual pool addresses (placeholders in SPEC need updating)
+- The environment variables `HOOKED_POOL`, `STATIC_POOL`, `RPC_URL` and
+  `RPC_WS` **must** be filled in with real values in your `.env` file
+  before running `docker compose up`.
 
 ## 🛠️ Running Scripts Locally
 
