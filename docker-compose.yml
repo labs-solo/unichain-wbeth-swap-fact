@@ -33,7 +33,7 @@ services:
     volumes:
       - .:/workdir
       - hyperindex_cache:/root/.envio
-    working_dir: /workdir
+    working_dir: /workdir/infra/hyperindex
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
@@ -51,10 +51,14 @@ services:
       - TZ=UTC
     volumes: [ .:/workdir ]
     command: |
-      apk add --no-cache nodejs npm
-      npm i -g @envio/hyperindex-cli@latest   # CLI binary
-      echo '0 2 * * * /workdir/scripts/daily_refresh.sh >> /workdir/logs/daily_refresh.log 2>&1' > /etc/crontabs/root
+      sh -c '
+      apk add --no-cache nodejs npm postgresql-client python3 py3-pip busybox-openrc &&
+      npm install -g @envio/hyperindex-cli@latest &&
+      pip3 install psycopg2-binary requests &&
+      mkdir -p /workdir/logs &&
+      echo "0 2 * * * /workdir/scripts/daily_refresh.sh >> /workdir/logs/daily_refresh.log 2>&1" > /etc/crontabs/root &&
       crond -f -d 8
+      '
 
 volumes:
   pgdata:          # durable Postgres storage
