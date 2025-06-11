@@ -12,8 +12,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json pnpm-lock.yaml* ./
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Install dependencies without strict lockfile check
+RUN pnpm install --no-frozen-lockfile
 
 # Copy source code and config
 COPY . .
