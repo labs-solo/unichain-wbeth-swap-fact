@@ -28,6 +28,8 @@ services:
       postgres:
         condition: service_healthy
     env_file: [.env]
+    environment:
+      - TZ=UTC
     volumes:
       - .:/workdir
       - hyperindex_cache:/root/.envio
@@ -45,28 +47,14 @@ services:
     restart: unless-stopped
     depends_on:
       - hyperindex
-    env_file: [.env]
-    volumes:
-      - .:/workdir
-    working_dir: /workdir
-    command: 
-      - sh
-      - -c
-      - |
-        # Install required packages
-        apk add --no-cache postgresql-client python3 py3-pip crond
-        pip3 install psycopg2-binary requests
-        
-        # Set up cron job for 02:00 UTC daily
-        echo "0 2 * * * cd /workdir && /bin/sh scripts/daily_refresh.sh >> /var/log/daily_refresh.log 2>&1" > /etc/crontabs/root
-        
-        # Run initial refresh
-        echo "Running initial refresh..."
-        /bin/sh scripts/daily_refresh.sh
-        
-        # Start cron daemon
-        echo "Starting cron daemon..."
-        crond -f -l 2
+    environment:
+      - TZ=UTC
+    volumes: [ .:/workdir ]
+    command: |
+      apk add --no-cache nodejs npm
+      npm i -g @envio/hyperindex-cli@latest   # CLI binary
+      echo '0 2 * * * /workdir/scripts/daily_refresh.sh >> /workdir/logs/daily_refresh.log 2>&1' > /etc/crontabs/root
+      crond -f -d 8
 
 volumes:
   pgdata:          # durable Postgres storage
