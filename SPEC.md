@@ -132,7 +132,7 @@ repo/
 │   ├─ export_to_csv.sh         # Exports the fact table to a CSV
 │   └─ daily_refresh.sh         # The main daily cron script
 ├─ docker-compose.yml
-├─ .env.template
+├─ .env.template        # sample values to copy into `.env`
 └─ README.md
 ```
 
@@ -154,7 +154,8 @@ CHAIN_ID=11877
 HOOKED_POOL="0x4107…e1f"
 STATIC_POOL="0x51f9…3496e"
 ```
-> `.env.template` is version-controlled; `.env` is git-ignored.
+> `.env.template` is version-controlled as a reference. Copy it to `.env` and
+> update the values. The runtime services read variables from `.env`.
 
 ---
 
