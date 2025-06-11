@@ -88,6 +88,15 @@ Every day at 02:00 UTC, the system:
 - Alchemy API key for UniChain RPC access
 - Actual pool addresses (placeholders in SPEC need updating)
 
+## 🛠️ Running Scripts Locally
+
+If you need to run the Python scripts outside of Docker, install the required
+packages first:
+
+```bash
+pip install -r requirements.txt
+```
+
 ## 🎯 Success Criteria
 
 ✅ **Implemented Features:**
