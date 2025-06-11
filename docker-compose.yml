@@ -40,25 +40,16 @@ services:
       retries: 5
 
 # ──────────────────────────────────────────────────────────────
-# 3. cron (daily refresh)  – runs inside a tiny Alpine image
+# 3. cron (daily refresh)  – runs inside a custom Alpine image
 # ──────────────────────────────────────────────────────────────
   refresher:
-    image: alpine:3.19
+    build:
+      context: .
+      dockerfile: Dockerfile.refresher
     restart: unless-stopped
     depends_on:
       - hyperindex
-    environment:
-      - TZ=UTC
-    volumes: [ .:/workdir ]
-    command: |
-      sh -c '
-      apk add --no-cache nodejs npm postgresql-client python3 py3-pip busybox-openrc &&
-      npm install -g @envio/hyperindex-cli@latest &&
-      pip3 install psycopg2-binary requests &&
-      mkdir -p /workdir/logs &&
-      echo "0 2 * * * /workdir/scripts/daily_refresh.sh >> /workdir/logs/daily_refresh.log 2>&1" > /etc/crontabs/root &&
-      crond -f -d 8
-      '
+    volumes: [.:/workdir]
 
 volumes:
   pgdata:          # durable Postgres storage

@@ -1,10 +1,11 @@
 # Dockerfile for HyperIndex UniChain WBTC/ETH indexer
-# Builds from enviodev/uniswap-v4-indexer pinned tag with pnpm
-
 FROM node:18-alpine AS builder
 
-# Install pnpm
-RUN npm install -g pnpm@8.6.12
+# Install build dependencies
+RUN apk add --no-cache python3 make g++ postgresql-client curl
+
+# Install pnpm and envio
+RUN npm install -g pnpm@8.6.12 envio@2.21.5
 
 # Set working directory
 WORKDIR /app
@@ -12,13 +13,13 @@ WORKDIR /app
 # Copy package files
 COPY package*.json pnpm-lock.yaml* ./
 
-# Install dependencies without strict lockfile check
-RUN pnpm install --no-frozen-lockfile
+# Install dependencies
+RUN pnpm install
 
-# Copy source code and config
+# Copy configuration and source
 COPY . .
 
-# Build the indexer
+# Generate code and build
 RUN pnpm build
 
 # Production stage
@@ -27,20 +28,13 @@ FROM node:18-alpine AS runner
 # Install runtime dependencies
 RUN apk add --no-cache postgresql-client curl
 
-# Install pnpm in production stage
-RUN npm install -g pnpm@8.6.12
+# Install envio CLI
+RUN npm install -g envio@2.21.5
 
 WORKDIR /app
 
-# Copy built application
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
-
-# Copy configuration
-COPY config.yaml ./
-COPY mappings.ts ./
+# Copy built application and config
+COPY --from=builder /app ./
 
 # Create non-root user
 RUN addgroup -g 1001 -S hyperindex && \
@@ -54,10 +48,11 @@ USER hyperindex
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 
-# Default command
-CMD ["pnpm", "start"]
-
 # Environment variables
 ENV NODE_ENV=production
 ENV CHAIN_ID=11877
-ENV LOG_LEVEL=info 
+ENV LOG_LEVEL=info
+ENV TZ=UTC
+
+# Run the envio indexer
+CMD ["envio", "dev"] 

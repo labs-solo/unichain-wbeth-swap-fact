@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "envio codegen",
+    "start": "envio dev",
+    "stop": "envio stop"
   },
-  "dependencies": {},
   "devDependencies": {
-    "typescript": "^5.3.3"
+    "envio": "^2.21.5",
+    "typescript": "^5.3.3",
+    "@types/node": "^18.18.0"
   }
 }

@@ -1,0 +1,30 @@
+type Swap @entity {
+  id: ID!
+  chainId: Int!
+  blockNumber: Int!
+  blockTime: DateTime!
+  txHash: String!
+  logIndex: Int!
+  
+  # Pool info
+  poolId: String!
+  poolAddress: String!
+  token0: String!
+  token1: String!
+  
+  # Swap amounts
+  amount0: String!
+  amount1: String!
+  
+  # Price and liquidity info
+  sqrtPriceX96: String!
+  tick: Int!
+  liquidity: String!
+  
+  # Transaction context
+  sender: String!
+  origin: String!
+  
+  # Metadata
+  createdAt: DateTime!
+} 
