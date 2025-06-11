@@ -25,6 +25,8 @@ services:
     build:
       context: ./infra/hyperindex
       dockerfile: Dockerfile
+      secrets:
+        - .env
     restart: unless-stopped
     depends_on:
       postgres:
@@ -36,11 +38,6 @@ services:
       - .:/workdir
       - hyperindex_cache:/root/.envio
     working_dir: /workdir/infra/hyperindex
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || curl -f http://localhost:8080/graphql"]
-      interval: 30s
-      retries: 5
-      start_period: 60s
 
 # ──────────────────────────────────────────────────────────────
 # 3. cron (daily refresh)  – runs inside a custom Alpine image
@@ -57,3 +54,7 @@ services:
 volumes:
   pgdata:          # durable Postgres storage
   hyperindex_cache: # optional: keeps ABI + block-cache across restarts
+
+secrets:
+  .env:
+    file: .env

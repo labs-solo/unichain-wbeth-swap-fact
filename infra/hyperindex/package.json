@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "envio codegen",
-    "start": "envio dev",
+    "start": "TUI_OFF=true envio start",
     "stop": "envio stop"
   },
   "devDependencies": {

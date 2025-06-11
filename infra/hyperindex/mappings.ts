@@ -60,8 +60,10 @@ export async function handleSwap(event: SwapEvent, db: Database): Promise<void> 
   // We'll need to check if this swap is from one of our target pools
   const poolIdHex = poolId.toString();
   
-  // For now, we'll index all swaps and filter later in the fact table
-  // In production, you'd want to implement proper pool filtering here
+  // Exit early if the swap is not from one of our target pools
+  if (poolIdHex !== HOOKED_POOL && poolIdHex !== STATIC_POOL) {
+    return;
+  }
   
   // Determine token addresses based on the pool
   // This is simplified - in reality you'd query the pool to get token0/token1

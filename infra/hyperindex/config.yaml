@@ -4,34 +4,19 @@
 name: unichain-wbtc-eth-swaps
 description: "Indexes WBTC/ETH swaps from hooked and static pools on UniChain"
 
-indexers:
-  - name: uni_v4_wbeth
-    chain: unichain
-    # ⬇️ begin at first pool-creation block to avoid useless back-fill
-    start_block: 18_650_793            # ← block 18650793
-    mappings: infra/hyperindex/mappings.ts
-    # ⬇️ filter at the subscription layer
-    pool_filter:
-      - ${HOOKED_POOL}                 # 0x4107…e1f
-      - ${STATIC_POOL}                 # 0x51f9…3496e
-    entities:
-      - Swap
+contracts:
+  - name: PoolManager
+    handler: infra/hyperindex/mappings.ts
+    events:
+      - event: Swap(bytes32 indexed id, address indexed sender, int128 amount0, int128 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick, uint24 fee)
+
+networks:
+  - id: 11877 # unichain
+    start_block: 18650793
+    rpc: ${RPC_URL}
+    contracts:
+      - name: PoolManager
+        address:
+          - "0x1f98400000000000000000000000000000000004" # The address you provided
 
 # Database configuration
-database:
-  type: postgres
-  host: ${DATABASE_HOST:-postgres}
-  port: ${DATABASE_PORT:-5432}
-  database: ${DATABASE_NAME:-postgres}
-  username: ${DATABASE_USER:-postgres}
-  password: ${DATABASE_PASSWORD:-secret}
-
-# Target table for raw swaps
-target_table: raw_unichain_swaps
-
-# Optional: Block confirmation settings
-confirmations: 1
-
-# Logging
-log_level: info
-log_format: json

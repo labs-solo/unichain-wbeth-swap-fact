@@ -1,8 +1,10 @@
+scalar DateTime
+
 type Swap @entity {
   id: ID!
   chainId: Int!
   blockNumber: Int!
-  blockTime: DateTime!
+  blockTime: String!
   txHash: String!
   logIndex: Int!
   
@@ -26,5 +28,5 @@ type Swap @entity {
   origin: String!
   
   # Metadata
-  createdAt: DateTime!
+  createdAt: String!
 } 

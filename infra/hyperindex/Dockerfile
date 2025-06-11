@@ -1,32 +1,30 @@
+# syntax=docker/dockerfile:1
 # Dockerfile for HyperIndex UniChain WBTC/ETH indexer
-FROM node:18-alpine AS builder
+FROM node:18 AS builder
 
 # Install build dependencies
-RUN apk add --no-cache python3 make g++ postgresql-client curl
+RUN apt-get update && apt-get install -y python3 make g++ postgresql-client curl
 
-# Install pnpm and envio
-RUN npm install -g pnpm@8.6.12 envio@2.21.5
+# Install envio
+RUN npm install -g envio@2.21.5
 
 # Set working directory
 WORKDIR /app
 
 # Copy package files
-COPY package*.json pnpm-lock.yaml* ./
-
-# Install dependencies
-RUN pnpm install
+COPY package*.json ./
 
 # Copy configuration and source
 COPY . .
 
-# Generate code and build
-RUN envio codegen && pnpm build
+# Generate code
+RUN --mount=type=secret,id=.env sh -c 'set -a && . /run/secrets/.env && set +a && envio codegen'
 
 # Production stage
-FROM node:18-alpine AS runner
+FROM node:18 AS runner
 
 # Install runtime dependencies
-RUN apk add --no-cache postgresql-client curl
+RUN apt-get update && apt-get install -y postgresql-client curl
 
 # Install envio CLI
 RUN npm install -g envio@2.21.5
@@ -37,8 +35,7 @@ WORKDIR /app
 COPY --from=builder /app ./
 
 # Create non-root user
-RUN addgroup -g 1001 -S hyperindex && \
-    adduser -S hyperindex -u 1001
+RUN addgroup --system --gid 1001 hyperindex && adduser --system --uid 1001 --gid 1001 hyperindex
 
 # Change ownership
 RUN chown -R hyperindex:hyperindex /app
